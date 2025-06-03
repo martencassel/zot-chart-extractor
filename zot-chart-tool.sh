@@ -2,16 +2,41 @@
 
 set -e
 
+
+# --- Dependency checker ---
+REQUIRED_TOOLS=(bash tar find yq sed grep)
+MISSING=()
+for tool in "${REQUIRED_TOOLS[@]}"; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        MISSING+=("$tool")
+    fi
+done
+if [ "${#MISSING[@]}" -ne 0 ]; then
+    echo "Missing required tools: ${MISSING[*]}"
+    echo "Please install them and try again."
+    exit 1
+fi
+
+# Check yq version (must be Go version v4+)
+if ! yq --version 2>&1 | grep -qE '^yq (version )?4\.'; then
+    echo "yq v4+ (Go version) is required. Install from https://github.com/mikefarah/yq"
+    exit 1
+fi
+# --- End dependency checker ---
+
+# Color definitions for output
 CYAN=$'\033[1;36m'
 YELLOW=$'\033[1;33m'
 GREEN=$'\033[1;32m'
 MAGENTA=$'\033[1;35m'
 RESET=$'\033[0m'
 
+# Constants for file names
 RAW_OUTPUT="helm-charts-raw.yml"
 OUTPUT_FILE="helm-charts.yml"
 TMP_CHART="chart.yaml.tmp"
 
+# Function to display usage information
 usage() {
     echo "Usage:"
     echo "  $0 scan [-p|--path <zot-root>]   # Scan all subpaths (default: ./zot)"
@@ -19,6 +44,8 @@ usage() {
     exit 1
 }
 
+
+# Function to list Helm charts from the output file
 list_charts() {
     local file="${1:-$OUTPUT_FILE}"
     if ! command -v yq >/dev/null 2>&1; then
@@ -44,6 +71,7 @@ list_charts() {
     done
 }
 
+# Function to scan all subpaths for Helm charts
 scan_all() {
     local ROOT_DIR="${1:-./zot}"
 
@@ -58,6 +86,7 @@ scan_all() {
     total_files=$(find "$ROOT_DIR" -type f | wc -l)
     current_file=0
 
+    # Find all tar.gz files and extract Chart.yaml
     find "$ROOT_DIR" -type f | while read -r archive; do
         current_file=$((current_file + 1))
         echo -ne "${CYAN}[$current_file/$total_files]${RESET} Processing: ${YELLOW}${archive}${RESET}          \r"
