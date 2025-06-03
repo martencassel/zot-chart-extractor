@@ -39,9 +39,8 @@ A simple tool to extract Helm chart metadata from a Zot OCI registry folder stru
 
 ## Inline Demo
 
-```markdown
 [![asciicast](https://asciinema.org/a/cqLb8r0VEE6KNz7Zph4x0NmfA.svg)](https://asciinema.org/a/cqLb8r0VEE6KNz7Zph4x0NmfA)
-```
+
 
 Replace `your-demo-id` with your actual asciinema recording ID.
 
