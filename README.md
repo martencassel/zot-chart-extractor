@@ -22,6 +22,14 @@
 - GNU coreutils (`find`, `tar`, etc.)
 - [yq (Go version, v4+)](https://github.com/mikefarah/yq)
 
+
+```bash
+VERSION=v4.45.4
+BINARY=yq_linux_amd64
+sudo wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY} -O /usr/local/bin/yq &&\
+    sudo chmod +x /usr/local/bin/yq
+```
+
 ---
 
 ## 🚦 Usage
